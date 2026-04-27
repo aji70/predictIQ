@@ -630,8 +630,30 @@ impl Database {
         Ok(analytics)
     }
 
-    /// Stub: resolve a market outcome. Full implementation requires a markets table.
-    pub async fn resolve_market(&self, _market_id: i64, _outcome_index: u32) -> anyhow::Result<()> {
+    /// Resolve a market by persisting the winning outcome to the database.
+    ///
+    /// Returns an error if the market does not exist or is not in `active` status.
+    pub async fn resolve_market(&self, market_id: i64, outcome_index: u32) -> anyhow::Result<()> {
+        let rows_affected = self
+            .with_timeout(
+                "resolve_market",
+                sqlx::query(
+                    "UPDATE markets \
+                     SET status = 'resolved', outcome_index = $1, resolved_at = NOW() \
+                     WHERE id = $2 AND status = 'active'",
+                )
+                .bind(outcome_index as i32)
+                .bind(market_id)
+                .execute(&self.pool),
+            )
+            .await
+            .map_err(anyhow::Error::from)?
+            .rows_affected();
+
+        if rows_affected == 0 {
+            anyhow::bail!("market {market_id} not found or not in active status");
+        }
+
         Ok(())
     }
 
