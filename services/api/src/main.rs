@@ -222,7 +222,7 @@ async fn main() -> anyhow::Result<()> {
         .layer(middleware::from_fn(validation::content_type_validation_middleware))
         .layer(middleware::from_fn(validation::request_size_validation_middleware))
         .layer(middleware::from_fn_with_state(
-            rate_limiter.clone(),
+            state.clone(),
             rate_limit::newsletter_rate_limit_middleware,
         ))
         .with_state(state.clone());

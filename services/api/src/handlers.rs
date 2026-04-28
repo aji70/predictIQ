@@ -222,20 +222,6 @@ pub async fn newsletter_subscribe(
         state.config.trust_proxy,
         &state.config.trusted_proxy_cidrs,
     );
-    let allowed = state
-        .newsletter_rate_limiter
-        .allow(&ip, 5, Duration::from_secs(15 * 60))
-        .await;
-
-    if !allowed {
-        return Ok((
-            StatusCode::TOO_MANY_REQUESTS,
-            Json(NewsletterResponse {
-                success: false,
-                message: "Too many requests, please try again later.".to_string(),
-            }),
-        ));
-    }
 
     let email = match normalized_email(&payload.email) {
         Some(value) => value,

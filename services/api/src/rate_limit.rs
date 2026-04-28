@@ -7,20 +7,28 @@ use axum::{
     response::Response,
 };
 
-use crate::security::{extract_client_ip, RateLimitConfig, RateLimiter};
+use crate::{security::{extract_client_ip, RateLimitConfig, RateLimiter}, AppState};
 
-/// Newsletter endpoint rate limiting (5 req/hour per IP)
+/// Newsletter endpoint rate limiting — policy is driven by config:
+/// `NEWSLETTER_RATE_LIMIT_MAX` (default 5) per `NEWSLETTER_RATE_LIMIT_WINDOW_SECS` (default 3600).
 pub async fn newsletter_rate_limit_middleware(
-    State(limiter): State<Arc<RateLimiter>>,
+    State(state): State<Arc<AppState>>,
     headers: HeaderMap,
     connect_info: Option<ConnectInfo<std::net::SocketAddr>>,
     request: Request,
     next: Next,
 ) -> Result<Response, StatusCode> {
     let ip = extract_client_ip(&headers, connect_info.as_ref(), true);
-    let config = RateLimitConfig::new(5, Duration::from_secs(3600));
+    let allowed = state
+        .newsletter_rate_limiter
+        .allow(
+            &format!("newsletter:{ip}"),
+            state.config.newsletter_rate_limit_max,
+            Duration::from_secs(state.config.newsletter_rate_limit_window_secs),
+        )
+        .await;
 
-    if !limiter.check(&format!("newsletter:{}", ip), &config).await {
+    if !allowed {
         return Err(StatusCode::TOO_MANY_REQUESTS);
     }
 

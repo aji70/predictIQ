@@ -193,6 +193,10 @@ pub struct Config {
     pub gdpr_export_rate_limit: u32,
     /// GDPR export rate limit window (seconds). Default: 3600.
     pub gdpr_export_rate_window_secs: u64,
+    /// Newsletter subscribe rate limit: max requests per window per IP. Default: 5.
+    pub newsletter_rate_limit_max: usize,
+    /// Newsletter subscribe rate limit window (seconds). Default: 3600.
+    pub newsletter_rate_limit_window_secs: u64,
     /// HMAC secret for signing unsubscribe tokens.
     pub unsubscribe_signing_secret: Option<String>,
     /// CORS policy.  See [`CorsConfig`] for per-field documentation.
@@ -381,6 +385,14 @@ impl Config {
                 .and_then(|s| s.parse().ok())
                 .unwrap_or(3),
             gdpr_export_rate_window_secs: env::var("GDPR_EXPORT_RATE_WINDOW_SECS")
+                .ok()
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(3600),
+            newsletter_rate_limit_max: env::var("NEWSLETTER_RATE_LIMIT_MAX")
+                .ok()
+                .and_then(|s| s.parse().ok())
+                .unwrap_or(5),
+            newsletter_rate_limit_window_secs: env::var("NEWSLETTER_RATE_LIMIT_WINDOW_SECS")
                 .ok()
                 .and_then(|s| s.parse().ok())
                 .unwrap_or(3600),
