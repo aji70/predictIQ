@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/popsman01/predictIQ/compare/v1.0.0...v1.0.1) (2026-05-27)
+
+
+### Bug Fixes
+
+* cache stale-on-error, env zod validation, form-error a11y, touch gesture tests ([02688d1](https://github.com/popsman01/predictIQ/commit/02688d1f954d7450fa78fc8987fa63c6462f27e4)), closes [#744](https://github.com/popsman01/predictIQ/issues/744) [#745](https://github.com/popsman01/predictIQ/issues/745) [#747](https://github.com/popsman01/predictIQ/issues/747) [#746](https://github.com/popsman01/predictIQ/issues/746) [#744](https://github.com/popsman01/predictIQ/issues/744) [#745](https://github.com/popsman01/predictIQ/issues/745) [#746](https://github.com/popsman01/predictIQ/issues/746) [#747](https://github.com/popsman01/predictIQ/issues/747)
+
 # 1.0.0 (2026-05-27)
 
 
