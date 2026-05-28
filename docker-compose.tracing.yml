@@ -35,6 +35,9 @@ services:
       - "4318:4318"    # OTLP HTTP receiver
       - "8888:8888"    # Prometheus metrics
       - "13133:13133"  # Health check
+    environment:
+      - JAEGER_ENDPOINT=${JAEGER_ENDPOINT:-jaeger:14250}
+      - ZIPKIN_ENDPOINT=${ZIPKIN_ENDPOINT:-http://zipkin:9411/api/v2/spans}
     depends_on:
       - jaeger
       - zipkin
